@@ -1,7 +1,8 @@
 # devcontainer
 
 Shared dev container image for PRISM repos: Claude Code, Codex, opencode,
-Node.js, the GitHub CLI, and Python with matplotlib, pandas and python-pptx.
+Node.js with pptxgenjs, the GitHub CLI, and Python with matplotlib, pandas
+and python-pptx.
 
 Use it from a repo's `.devcontainer/devcontainer.json`:
 

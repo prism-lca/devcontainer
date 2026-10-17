@@ -47,6 +47,7 @@ jobs:
             set -e
             claude --version; codex --version; opencode --version
             gh --version | head -1; node --version
+            node -e "require(\"pptxgenjs\"); console.log(\"pptxgenjs ok\")"
             python3 -c "import matplotlib, pandas, pptx; print(\"python ok\")"'
           docker image inspect prism-devcontainer:test --format 'size: {{.Size}} bytes'
 

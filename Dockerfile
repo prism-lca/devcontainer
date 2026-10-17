@@ -18,9 +18,11 @@ RUN apt-get update \
 USER vscode
 ENV NPM_CONFIG_PREFIX=/home/vscode/.npm-global
 ENV PATH=/home/vscode/.npm-global/bin:/home/vscode/.local/bin:$PATH
+# Lets scripts require() global packages such as pptxgenjs.
+ENV NODE_PATH=/home/vscode/.npm-global/lib/node_modules
 # npm also installs opencode's "baseline" build for CPUs without AVX2, which
 # codespace machines don't need, and keeps every tarball in its cache.
-RUN npm install -g @anthropic-ai/claude-code @openai/codex opencode-ai \
+RUN npm install -g @anthropic-ai/claude-code @openai/codex opencode-ai pptxgenjs \
  && rm -rf "$NPM_CONFIG_PREFIX"/lib/node_modules/opencode-linux-*-baseline* \
       "$NPM_CONFIG_PREFIX"/lib/node_modules/opencode-ai/node_modules/opencode-linux-*-baseline* \
  && npm cache clean --force \
