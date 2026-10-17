@@ -1,0 +1,40 @@
+# Builds the Dockerfile and publishes it to ghcr.io/<org>/prism-devcontainer,
+# tagged "latest" and with the build date (e.g. 2026-10-17) for pinning.
+# Rebuilds weekly too, so the agent CLIs don't go stale.
+name: Publish image
+
+on:
+  push:
+    branches: [main]
+    paths: [Dockerfile, .github/workflows/publish.yml]
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pick tags
+        id: tags
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/prism-devcontainer"
+          echo "tags=$image:latest,$image:$(date -u +%F)" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
