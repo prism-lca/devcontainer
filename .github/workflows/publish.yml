@@ -33,6 +33,23 @@ jobs:
           image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/prism-devcontainer"
           echo "tags=$image:latest,$image:$(date -u +%F)" >> "$GITHUB_OUTPUT"
 
+      # Build and check the tools run before anything is pushed, so a broken
+      # image never replaces :latest.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: prism-devcontainer:test
+
+      - name: Check tools
+        run: |
+          docker run --rm -u vscode prism-devcontainer:test bash -c '
+            set -e
+            claude --version; codex --version; opencode --version
+            gh --version | head -1; node --version
+            python3 -c "import matplotlib, pandas, pptx; print(\"python ok\")"'
+          docker image inspect prism-devcontainer:test --format 'size: {{.Size}} bytes'
+
       - uses: docker/build-push-action@v6
         with:
           context: .
